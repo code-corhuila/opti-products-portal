@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { centsToPesosInput, formatCents, pesosToCents } from './frame';
+import { EMPTY_LENS, validateLens, type LensDraft } from './validation';
 import { EMPTY_FRAME, validateFrame, validateMinStock, validateStockEntry, type FrameDraft } from './validation';
+
+const validLens: LensDraft = {
+  ...EMPTY_LENS,
+  sku: 'LNS-MONO-150',
+  brand: 'Essilor',
+  lensType: 'MONOFOCAL',
+  refractiveIndex: '1.50',
+  costPesos: '80000',
+  salePricePesos: '150000',
+  stock: '20',
+  minStock: '5',
+};
 
 const valid: FrameDraft = {
   ...EMPTY_FRAME,
@@ -47,6 +60,26 @@ describe('frame validation (HU-05)', () => {
 
   it('rejects negative stock', () => {
     expect(validateFrame({ ...valid, stock: '-3' }).stock).toBeDefined();
+  });
+});
+
+describe('lens validation (HU-25)', () => {
+  it('accepts a valid lens', () => {
+    expect(validateLens(validLens)).toEqual({});
+  });
+
+  it('names every invalid field at once', () => {
+    const errors = validateLens({ ...validLens, sku: 'x', brand: ' ', lensType: '', costPesos: 'abc', stock: '-1' });
+    expect(Object.keys(errors).sort()).toEqual(['brand', 'costPesos', 'lensType', 'sku', 'stock']);
+  });
+
+  it('rejects a sale price below cost', () => {
+    expect(validateLens({ ...validLens, costPesos: '150000', salePricePesos: '120000' }).salePricePesos).toBeDefined();
+  });
+
+  it('rejects a refractive index outside 1.00-2.00 but allows it to be omitted', () => {
+    expect(validateLens({ ...validLens, refractiveIndex: '3' }).refractiveIndex).toBeDefined();
+    expect(validateLens({ ...validLens, refractiveIndex: '' })).toEqual({});
   });
 });
 
