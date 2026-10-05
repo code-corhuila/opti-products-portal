@@ -20,6 +20,7 @@ export interface Frame {
   supplier: string | null;
   status: FrameStatus;
   createdAt: string;
+  imageUrl: string | null;
 }
 
 /** Inventory dashboard counters (HU-15). recentCount30d is reported as-is, never as an invented percentage. */
