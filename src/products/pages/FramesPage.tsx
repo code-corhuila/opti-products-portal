@@ -11,10 +11,14 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
   const [params, setParams] = useSearchParams();
   const [text, setText] = useState(params.get('q') ?? '');
   const lowStock = (params.get('lowStock') ?? '') as '' | 'true' | 'false';
+  const brand = params.get('brand') ?? '';
   const page = Number(params.get('page') ?? '1') || 1;
   const q = ui.useDebounced(text.trim(), 300);
 
-  const { state, reload } = ui.useLoad((signal) => api.list({ q, lowStock, page }, signal), [q, lowStock, page]);
+  const { state, reload } = ui.useLoad((signal) => api.list({ q, lowStock, brand, page }, signal), [q, lowStock, brand, page]);
+  const { state: summaryState } = ui.useLoad((signal) => api.summary(signal), []);
+  const { state: brandsState } = ui.useLoad((signal) => api.brands(signal), []);
+  const brandOptions = brandsState.status === 'ready' ? brandsState.data.map((b) => ({ value: b, label: b })) : [];
 
   function update(next: Record<string, string>): void {
     const merged = new URLSearchParams(params);
@@ -32,12 +36,49 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
         subtitle="Monturas y su existencia."
         actions={shell.can('ADMIN') ? <Link className="btn" to="new">Nueva montura</Link> : null}
       />
+      <div className="summary-grid">
+        <div className="summary-card">
+          <h2>Total de referencias</h2>
+          <ui.DataState state={summaryState} onRetry={() => undefined}>
+            {(summary) => <div className="metric">{summary.totalReferences}</div>}
+          </ui.DataState>
+        </div>
+        <div className="summary-card">
+          <h2>Stock bajo</h2>
+          <ui.DataState state={summaryState} onRetry={() => undefined}>
+            {(summary) => (
+              <div className={summary.lowStockCount === 0 ? 'metric calm' : 'metric'}>{summary.lowStockCount}</div>
+            )}
+          </ui.DataState>
+        </div>
+        <div className="summary-card">
+          <h2>Sin stock</h2>
+          <ui.DataState state={summaryState} onRetry={() => undefined}>
+            {(summary) => (
+              <div className={summary.outOfStockCount === 0 ? 'metric calm' : 'metric'}>{summary.outOfStockCount}</div>
+            )}
+          </ui.DataState>
+        </div>
+        <div className="summary-card">
+          <h2>Valor total del inventario</h2>
+          <ui.DataState state={summaryState} onRetry={() => undefined}>
+            {(summary) => (
+              <>
+                <div className="metric">{formatCents(summary.totalValueCents)}</div>
+                {summary.recentCount30d > 0 ? <p>+{summary.recentCount30d} nuevas este mes</p> : null}
+              </>
+            )}
+          </ui.DataState>
+        </div>
+      </div>
       <div className="toolbar" role="search">
         <ui.TextField id="frame-search" label="Buscar" type="search" placeholder="SKU, marca o modelo" value={text}
           onChange={(value) => { setText(value); update({ page: '' }); }} maxLength={60} />
         <ui.SelectField id="frame-low-stock" label="Existencia" value={lowStock} placeholder="Todas"
           onChange={(value) => update({ lowStock: value, page: '' })}
           options={[{ value: 'true', label: 'Stock bajo' }, { value: 'false', label: 'Stock normal' }]} />
+        <ui.SelectField id="frame-brand" label="Marca" value={brand} placeholder="Todas"
+          onChange={(value) => update({ brand: value, page: '' })} options={brandOptions} />
       </div>
       <ui.DataState
         state={state}

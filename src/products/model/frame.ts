@@ -22,6 +22,15 @@ export interface Frame {
   createdAt: string;
 }
 
+/** Inventory dashboard counters (HU-15). recentCount30d is reported as-is, never as an invented percentage. */
+export interface FrameSummary {
+  totalReferences: number;
+  lowStockCount: number;
+  outOfStockCount: number;
+  totalValueCents: number;
+  recentCount30d: number;
+}
+
 export interface StockMovement {
   id: string;
   frameId: string;
