@@ -53,19 +53,7 @@ export function productsApi(api: ApiClient) {
     movements: (id: string, page: number, signal?: AbortSignal) =>
       api.get<Page<StockMovement>>(`/api/v1/frames/${id}/movements`, { query: { page, limit: 5 }, ...(signal ? { signal } : {}) }),
 
-    /**
-     * Uploads the frame's photo (HU-16). The backend expects multipart/form-data, so the body is a
-     * FormData instance rather than a plain object.
-     *
-     * KNOWN LIMITATION: the shared ApiClient (opti-front, `src/core/http/apiClient.ts`) always runs
-     * `JSON.stringify(body)` and always sets `Content-Type: application/json` whenever a body is
-     * present. It has no special case for FormData, so as written today this call reaches the
-     * gateway with a broken body (`"{}"`, the JSON-stringified FormData) and the wrong content type,
-     * and the backend will reject it as not-multipart. Making the upload actually work end-to-end
-     * requires a small change in opti-front's apiClient (skip stringify/the forced header when the
-     * body is a FormData) — out of scope here since opti-front was explicitly off-limits for this
-     * work. This method is shaped the way it must look once that change lands.
-     */
+    /** Uploads the frame's photo (HU-16) as multipart/form-data. */
     uploadImage: (id: string, file: File) => {
       const body = new FormData();
       body.append('file', file);
