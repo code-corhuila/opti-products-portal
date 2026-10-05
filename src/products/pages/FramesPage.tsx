@@ -93,6 +93,7 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
               <table>
                 <thead>
                   <tr>
+                    <th>Foto</th>
                     <th>SKU</th>
                     <th>Montura</th>
                     <th className="num">Precio</th>
@@ -103,6 +104,21 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
                 <tbody>
                   {result.data.map((frame) => (
                     <tr key={frame.id}>
+                      <td>
+                        {frame.imageUrl ? (
+                          <img src={frame.imageUrl} alt={`${frame.brand} ${frame.model}`}
+                            style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                        ) : (
+                          <span aria-hidden="true" role="img" aria-label="Sin foto"
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              width: '40px', height: '40px', borderRadius: '4px', border: '1px solid var(--border)',
+                              color: 'var(--text-soft)', fontSize: '1.1rem',
+                            }}>
+                            👓
+                          </span>
+                        )}
+                      </td>
                       <td>{frame.sku}</td>
                       <td>
                         <Link to={frame.id}>{frame.brand} {frame.model}</Link>
