@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { ShellContext } from '../../shell-contract';
 import { productsApi } from '../api/productsApi';
+import { CatalogTabs } from '../components/CatalogTabs';
 import { formatCents } from '../model/frame';
 
 /** Inventory listing (HU-05, HU-06): search, low-stock filter, four states, bounded pages. */
@@ -31,6 +32,7 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
 
   return (
     <>
+      <CatalogTabs />
       <ui.PageHeader
         title="Inventario"
         subtitle="Monturas y su existencia."
