@@ -1,8 +1,10 @@
 import { pesosToCents } from './frame';
+import type { LensType } from './lens';
 
 export type Errors = Record<string, string>;
 
 const SKU = /^[A-Za-z0-9][A-Za-z0-9._-]{2,59}$/;
+const LENS_TYPES: LensType[] = ['MONOFOCAL', 'BIFOCAL', 'PROGRESSIVE', 'OCCUPATIONAL'];
 
 export interface FrameDraft {
   sku: string;
@@ -62,6 +64,69 @@ export function validateFrame(draft: FrameDraft): Errors {
   const cost = pesosToCents(draft.costPesos);
   if (Number.isNaN(cost) || cost < 0) {
     errors.costPesos = 'Escribe un valor en pesos, por ejemplo 310000';
+  }
+  const price = pesosToCents(draft.salePricePesos);
+  if (Number.isNaN(price) || price < 0) {
+    errors.salePricePesos = 'Escribe un valor en pesos';
+  } else if (!Number.isNaN(cost) && price < cost) {
+    errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
+  }
+  if (integerBetween(draft.stock, 0, 1_000_000) === undefined) {
+    errors.stock = 'El stock debe ser un número entero, 0 o mayor';
+  }
+  if (integerBetween(draft.minStock, 0, 1_000_000) === undefined) {
+    errors.minStock = 'El stock mínimo debe ser un número entero, 0 o mayor';
+  }
+  return errors;
+}
+
+export interface LensDraft {
+  sku: string;
+  brand: string;
+  lensType: string;
+  material: string;
+  coating: string;
+  refractiveIndex: string;
+  costPesos: string;
+  salePricePesos: string;
+  stock: string;
+  minStock: string;
+}
+
+export const EMPTY_LENS: LensDraft = {
+  sku: '',
+  brand: '',
+  lensType: '',
+  material: '',
+  coating: '',
+  refractiveIndex: '',
+  costPesos: '',
+  salePricePesos: '',
+  stock: '0',
+  minStock: '0',
+};
+
+/** Same rules as HU-05's frame, plus a closed lens type and an optional refractive index (1.00 to 2.00). */
+export function validateLens(draft: LensDraft): Errors {
+  const errors: Errors = {};
+  if (!SKU.test(draft.sku.trim())) {
+    errors.sku = 'De 3 a 60 letras, números, puntos, guiones o guion bajo';
+  }
+  if (!length(draft.brand, 2, 80)) {
+    errors.brand = 'La marca es obligatoria (2 a 80 caracteres)';
+  }
+  if (!LENS_TYPES.includes(draft.lensType as LensType)) {
+    errors.lensType = 'Selecciona un tipo de lente';
+  }
+  if (draft.refractiveIndex.trim() !== '') {
+    const index = Number(draft.refractiveIndex.trim());
+    if (Number.isNaN(index) || index < 1 || index > 2) {
+      errors.refractiveIndex = 'Debe estar entre 1.00 y 2.00';
+    }
+  }
+  const cost = pesosToCents(draft.costPesos);
+  if (Number.isNaN(cost) || cost < 0) {
+    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 80000';
   }
   const price = pesosToCents(draft.salePricePesos);
   if (Number.isNaN(price) || price < 0) {
