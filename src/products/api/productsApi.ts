@@ -1,10 +1,11 @@
 import type { ApiClient, Page } from '../../shell-contract';
-import type { Frame, FrameStatus, StockMovement } from '../model/frame';
+import type { Frame, FrameStatus, FrameSummary, StockMovement } from '../model/frame';
 
 export interface FrameQuery {
   q?: string;
   lowStock?: '' | 'true' | 'false';
   status?: FrameStatus | '';
+  brand?: string;
   page?: number;
   limit?: number;
 }
@@ -33,6 +34,10 @@ export function productsApi(api: ApiClient) {
       }),
 
     get: (id: string, signal?: AbortSignal) => api.get<Frame>(`/api/v1/frames/${id}`, signal ? { signal } : {}),
+
+    summary: (signal?: AbortSignal) => api.get<FrameSummary>('/api/v1/frames/summary', signal ? { signal } : {}),
+
+    brands: (signal?: AbortSignal) => api.get<string[]>('/api/v1/frames/brands', signal ? { signal } : {}),
 
     create: (body: NewFrame, idempotencyKey: string) =>
       api.post<{ id: string }>('/api/v1/frames', body, { idempotencyKey }),
