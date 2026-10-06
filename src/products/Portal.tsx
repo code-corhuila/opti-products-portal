@@ -1,12 +1,18 @@
 import type { ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import type { ShellContext } from '../shell-contract';
+import { AccessoriesPage } from './pages/AccessoriesPage';
+import { AccessoryDetailPage } from './pages/AccessoryDetailPage';
 import { FrameDetailPage } from './pages/FrameDetailPage';
 import { FramesPage } from './pages/FramesPage';
 import { LensDetailPage } from './pages/LensDetailPage';
 import { LensesPage } from './pages/LensesPage';
+import { LiquidDetailPage } from './pages/LiquidDetailPage';
+import { LiquidsPage } from './pages/LiquidsPage';
+import { NewAccessoryPage } from './pages/NewAccessoryPage';
 import { NewFramePage } from './pages/NewFramePage';
 import { NewLensPage } from './pages/NewLensPage';
+import { NewLiquidPage } from './pages/NewLiquidPage';
 
 /**
  * The products portal: mounted once by opti-front under /products (see opti-front's registry.ts
@@ -23,6 +29,12 @@ export default function Portal({ shell }: { shell: ShellContext }): ReactNode {
       <Route path="lenses" element={<LensesPage shell={shell} />} />
       <Route path="lenses/new" element={<NewLensPage shell={shell} />} />
       <Route path="lenses/:id" element={<LensDetailPage shell={shell} />} />
+      <Route path="accessories" element={<AccessoriesPage shell={shell} />} />
+      <Route path="accessories/new" element={<NewAccessoryPage shell={shell} />} />
+      <Route path="accessories/:id" element={<AccessoryDetailPage shell={shell} />} />
+      <Route path="liquids" element={<LiquidsPage shell={shell} />} />
+      <Route path="liquids/new" element={<NewLiquidPage shell={shell} />} />
+      <Route path="liquids/:id" element={<LiquidDetailPage shell={shell} />} />
       <Route path="*" element={<Navigate to="/products" replace />} />
     </Routes>
   );

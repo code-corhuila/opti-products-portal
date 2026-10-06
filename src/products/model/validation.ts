@@ -143,6 +143,105 @@ export function validateLens(draft: LensDraft): Errors {
   return errors;
 }
 
+export interface AccessoryDraft {
+  sku: string;
+  brand: string;
+  category: string;
+  costPesos: string;
+  salePricePesos: string;
+  stock: string;
+  minStock: string;
+}
+
+export const EMPTY_ACCESSORY: AccessoryDraft = {
+  sku: '',
+  brand: '',
+  category: '',
+  costPesos: '',
+  salePricePesos: '',
+  stock: '0',
+  minStock: '0',
+};
+
+/** category is free text (2 to 60 chars), brand is optional (HU-25). */
+export function validateAccessory(draft: AccessoryDraft): Errors {
+  const errors: Errors = {};
+  if (!SKU.test(draft.sku.trim())) {
+    errors.sku = 'De 3 a 60 letras, números, puntos, guiones o guion bajo';
+  }
+  if (!length(draft.category, 2, 60)) {
+    errors.category = 'La categoría es obligatoria (2 a 60 caracteres)';
+  }
+  const cost = pesosToCents(draft.costPesos);
+  if (Number.isNaN(cost) || cost < 0) {
+    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 5000';
+  }
+  const price = pesosToCents(draft.salePricePesos);
+  if (Number.isNaN(price) || price < 0) {
+    errors.salePricePesos = 'Escribe un valor en pesos';
+  } else if (!Number.isNaN(cost) && price < cost) {
+    errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
+  }
+  if (integerBetween(draft.stock, 0, 1_000_000) === undefined) {
+    errors.stock = 'El stock debe ser un número entero, 0 o mayor';
+  }
+  if (integerBetween(draft.minStock, 0, 1_000_000) === undefined) {
+    errors.minStock = 'El stock mínimo debe ser un número entero, 0 o mayor';
+  }
+  return errors;
+}
+
+export interface LiquidDraft {
+  sku: string;
+  brand: string;
+  volumeMl: string;
+  costPesos: string;
+  salePricePesos: string;
+  stock: string;
+  minStock: string;
+}
+
+export const EMPTY_LIQUID: LiquidDraft = {
+  sku: '',
+  brand: '',
+  volumeMl: '',
+  costPesos: '',
+  salePricePesos: '',
+  stock: '0',
+  minStock: '0',
+};
+
+/** volumeMl is the container size in millilitres, between 1 and 5000 (HU-25). */
+export function validateLiquid(draft: LiquidDraft): Errors {
+  const errors: Errors = {};
+  if (!SKU.test(draft.sku.trim())) {
+    errors.sku = 'De 3 a 60 letras, números, puntos, guiones o guion bajo';
+  }
+  if (!length(draft.brand, 2, 80)) {
+    errors.brand = 'La marca es obligatoria (2 a 80 caracteres)';
+  }
+  if (integerBetween(draft.volumeMl, 1, 5_000) === undefined) {
+    errors.volumeMl = 'El volumen debe ser un número entero entre 1 y 5000 ml';
+  }
+  const cost = pesosToCents(draft.costPesos);
+  if (Number.isNaN(cost) || cost < 0) {
+    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 3000';
+  }
+  const price = pesosToCents(draft.salePricePesos);
+  if (Number.isNaN(price) || price < 0) {
+    errors.salePricePesos = 'Escribe un valor en pesos';
+  } else if (!Number.isNaN(cost) && price < cost) {
+    errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
+  }
+  if (integerBetween(draft.stock, 0, 1_000_000) === undefined) {
+    errors.stock = 'El stock debe ser un número entero, 0 o mayor';
+  }
+  if (integerBetween(draft.minStock, 0, 1_000_000) === undefined) {
+    errors.minStock = 'El stock mínimo debe ser un número entero, 0 o mayor';
+  }
+  return errors;
+}
+
 export function validateStockEntry(quantityText: string): Errors {
   const errors: Errors = {};
   if (integerBetween(quantityText, 1, 1_000_000) === undefined) {
