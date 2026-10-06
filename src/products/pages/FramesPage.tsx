@@ -5,6 +5,35 @@ import { productsApi } from '../api/productsApi';
 import { CatalogTabs } from '../components/CatalogTabs';
 import { formatCents } from '../model/frame';
 
+const FRAME_ICON = (
+  <>
+    <circle cx="6" cy="10" r="3" />
+    <circle cx="14" cy="10" r="3" />
+    <path d="M9 10h2M3 10 1.5 8M17 10l1.5-2" />
+  </>
+);
+
+const LOW_STOCK_ICON = (
+  <>
+    <rect x="3.5" y="4" width="13" height="12" rx="1.5" />
+    <path d="M3.5 8h13" />
+  </>
+);
+
+const OUT_OF_STOCK_ICON = (
+  <>
+    <path d="M10 2.5 2.5 16.5h15Z" />
+    <path d="M10 8.5v3.5M10 14.5h.01" />
+  </>
+);
+
+const VALUE_ICON = (
+  <>
+    <circle cx="10" cy="10" r="7" />
+    <path d="M10 6v8M12.5 8c0-1-1-1.7-2.5-1.7S7.5 7 7.5 8c0 2.3 5 .9 5 3.3 0 1.1-1.1 1.7-2.5 1.7S7.5 12.4 7.5 11.3" />
+  </>
+);
+
 /** Inventory listing (HU-05, HU-06): search, low-stock filter, four states, bounded pages. */
 export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
   const { ui } = shell;
@@ -39,39 +68,20 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
         actions={shell.can('ADMIN') ? <Link className="btn" to="new">Nueva montura</Link> : null}
       />
       <div className="summary-grid">
-        <div className="summary-card">
-          <h2>Total de referencias</h2>
-          <ui.DataState state={summaryState} onRetry={() => undefined}>
-            {(summary) => <div className="metric">{summary.totalReferences}</div>}
-          </ui.DataState>
-        </div>
-        <div className="summary-card">
-          <h2>Stock bajo</h2>
-          <ui.DataState state={summaryState} onRetry={() => undefined}>
-            {(summary) => (
-              <div className={summary.lowStockCount === 0 ? 'metric calm' : 'metric'}>{summary.lowStockCount}</div>
-            )}
-          </ui.DataState>
-        </div>
-        <div className="summary-card">
-          <h2>Sin stock</h2>
-          <ui.DataState state={summaryState} onRetry={() => undefined}>
-            {(summary) => (
-              <div className={summary.outOfStockCount === 0 ? 'metric calm' : 'metric'}>{summary.outOfStockCount}</div>
-            )}
-          </ui.DataState>
-        </div>
-        <div className="summary-card">
-          <h2>Valor total del inventario</h2>
-          <ui.DataState state={summaryState} onRetry={() => undefined}>
-            {(summary) => (
-              <>
-                <div className="metric">{formatCents(summary.totalValueCents)}</div>
-                {summary.recentCount30d > 0 ? <p>+{summary.recentCount30d} nuevas este mes</p> : null}
-              </>
-            )}
-          </ui.DataState>
-        </div>
+        <ui.DataState state={summaryState} onRetry={() => undefined}>
+          {(summary) => (
+            <>
+              <ui.StatCard icon={FRAME_ICON} tone="primary" label="Total de referencias" value={summary.totalReferences} />
+              <ui.StatCard icon={LOW_STOCK_ICON} tone={summary.lowStockCount === 0 ? 'success' : 'warning'}
+                label="Stock bajo" value={summary.lowStockCount} />
+              <ui.StatCard icon={OUT_OF_STOCK_ICON} tone={summary.outOfStockCount === 0 ? 'success' : 'danger'}
+                label="Sin stock" value={summary.outOfStockCount} />
+              <ui.StatCard icon={VALUE_ICON} tone="success" label="Valor total del inventario"
+                value={formatCents(summary.totalValueCents)}
+                hint={summary.recentCount30d > 0 ? `+${summary.recentCount30d} nuevas este mes` : undefined} />
+            </>
+          )}
+        </ui.DataState>
       </div>
       <div className="toolbar" role="search">
         <ui.TextField id="frame-search" label="Buscar" type="search" placeholder="SKU, marca o modelo" value={text}
