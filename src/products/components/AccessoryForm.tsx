@@ -47,12 +47,16 @@ export function AccessoryForm({ shell, onCreated }: { shell: ShellContext; onCre
       {error && Object.keys(fieldErrors).length === 0 ? (
         <ui.Banner kind="error" title="No se pudo registrar el accesorio">{error.userMessage}</ui.Banner>
       ) : null}
-      <div className="grid-2">
+      <ui.SectionHeading tone="primary" title="Información del producto" description="Identificación y características del catálogo." icon={<><rect x="3" y="4" width="14" height="12" rx="2" /><path d="M6 8h8M6 12h5" /></>} />
+      <div className="grid-3">
         <ui.TextField id="accessory-sku" label="SKU" required value={draft.sku} onChange={set('sku')} error={errors.sku}
           maxLength={60} autoComplete="off" hint="Único, por ejemplo ACC-CASE-001" />
         <ui.TextField id="accessory-brand" label="Marca (opcional)" value={draft.brand} onChange={set('brand')} maxLength={80} />
         <ui.TextField id="accessory-category" label="Categoría" required value={draft.category} onChange={set('category')}
           error={errors.category} maxLength={60} hint="Por ejemplo Estuche, Paño de limpieza, Cordón" />
+      </div>
+      <ui.SectionHeading tone="success" title="Precios y stock" description="Valores de venta y niveles de inventario." icon={<path d="M10 2v16M14 5H8a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H5" />} />
+      <div className="grid-2">
         <ui.TextField id="accessory-cost" label="Costo (pesos)" required inputMode="numeric" value={draft.costPesos}
           onChange={set('costPesos')} error={errors.costPesos} maxLength={12} hint="Solo números, sin puntos ni signo" />
         <ui.TextField id="accessory-sale-price" label="Precio de venta (pesos)" required inputMode="numeric"

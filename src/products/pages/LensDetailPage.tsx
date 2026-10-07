@@ -68,7 +68,7 @@ export function LensDetailPage({ shell }: { shell: ShellContext }): ReactNode {
 
   return (
     <>
-      <ui.PageHeader title="Ficha del lente" actions={<Link className="btn btn-quiet" to="..">Volver al catálogo</Link>} />
+      <ui.PageHeader title="Ficha del lente" actions={<Link className="btn btn-quiet" to="/products/lenses">Volver al catálogo</Link>} />
       <ui.DataState state={state} onRetry={reload}>
         {(lens) => (
           <>

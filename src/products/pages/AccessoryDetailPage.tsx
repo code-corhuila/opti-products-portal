@@ -64,7 +64,7 @@ export function AccessoryDetailPage({ shell }: { shell: ShellContext }): ReactNo
 
   return (
     <>
-      <ui.PageHeader title="Ficha del accesorio" actions={<Link className="btn btn-quiet" to="..">Volver al catálogo</Link>} />
+      <ui.PageHeader title="Ficha del accesorio" actions={<Link className="btn btn-quiet" to="/products/accessories">Volver al catálogo</Link>} />
       <ui.DataState state={state} onRetry={reload}>
         {(accessory) => (
           <>
