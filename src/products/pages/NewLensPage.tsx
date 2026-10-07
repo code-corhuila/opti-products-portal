@@ -8,9 +8,9 @@ export function NewLensPage({ shell }: { shell: ShellContext }): ReactNode {
   return (
     <>
       <shell.ui.PageHeader title="Nuevo lente" subtitle="Los campos con * son obligatorios."
-        actions={<Link className="btn btn-quiet" to="..">Volver</Link>} />
+        actions={<Link className="btn btn-quiet" to="/products/lenses">Volver</Link>} />
       <div className="card">
-        <LensForm shell={shell} onCreated={(id) => navigate(`../${id}`)} />
+        <LensForm shell={shell} onCreated={(id) => navigate(`/products/lenses/${id}`, { replace: true })} />
       </div>
     </>
   );

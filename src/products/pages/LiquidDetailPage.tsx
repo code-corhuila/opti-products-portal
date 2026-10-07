@@ -64,7 +64,7 @@ export function LiquidDetailPage({ shell }: { shell: ShellContext }): ReactNode 
 
   return (
     <>
-      <ui.PageHeader title="Ficha del líquido" actions={<Link className="btn btn-quiet" to="..">Volver al catálogo</Link>} />
+      <ui.PageHeader title="Ficha del líquido" actions={<Link className="btn btn-quiet" to="/products/liquids">Volver al catálogo</Link>} />
       <ui.DataState state={state} onRetry={reload}>
         {(liquid) => (
           <>

@@ -8,9 +8,9 @@ export function NewFramePage({ shell }: { shell: ShellContext }): ReactNode {
   return (
     <>
       <shell.ui.PageHeader title="Nueva montura" subtitle="Los campos con * son obligatorios."
-        actions={<Link className="btn btn-quiet" to="..">Volver</Link>} />
+        actions={<Link className="btn btn-quiet" to="/products">Volver</Link>} />
       <div className="card">
-        <FrameForm shell={shell} onCreated={(id) => navigate(`../${id}`)} />
+        <FrameForm shell={shell} onCreated={(id) => navigate(`/products/${id}`, { replace: true })} />
       </div>
     </>
   );
