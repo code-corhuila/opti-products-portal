@@ -47,12 +47,16 @@ export function LiquidForm({ shell, onCreated }: { shell: ShellContext; onCreate
       {error && Object.keys(fieldErrors).length === 0 ? (
         <ui.Banner kind="error" title="No se pudo registrar el líquido">{error.userMessage}</ui.Banner>
       ) : null}
-      <div className="grid-2">
+      <ui.SectionHeading tone="primary" title="Información del producto" description="Identificación y características del catálogo." icon={<><rect x="3" y="4" width="14" height="12" rx="2" /><path d="M6 8h8M6 12h5" /></>} />
+      <div className="grid-3">
         <ui.TextField id="liquid-sku" label="SKU" required value={draft.sku} onChange={set('sku')} error={errors.sku}
           maxLength={60} autoComplete="off" hint="Único, por ejemplo LIQ-CLEAN-120" />
         <ui.TextField id="liquid-brand" label="Marca" required value={draft.brand} onChange={set('brand')} error={errors.brand} maxLength={80} />
         <ui.TextField id="liquid-volume" label="Volumen (ml)" required inputMode="numeric" value={draft.volumeMl}
           onChange={set('volumeMl')} error={errors.volumeMl} maxLength={5} hint="Entre 1 y 5000 ml" />
+      </div>
+      <ui.SectionHeading tone="success" title="Precios y stock" description="Valores de venta y niveles de inventario." icon={<path d="M10 2v16M14 5H8a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H5" />} />
+      <div className="grid-2">
         <ui.TextField id="liquid-cost" label="Costo (pesos)" required inputMode="numeric" value={draft.costPesos}
           onChange={set('costPesos')} error={errors.costPesos} maxLength={12} hint="Solo números, sin puntos ni signo" />
         <ui.TextField id="liquid-sale-price" label="Precio de venta (pesos)" required inputMode="numeric"

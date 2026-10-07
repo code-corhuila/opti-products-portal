@@ -8,9 +8,9 @@ export function NewLiquidPage({ shell }: { shell: ShellContext }): ReactNode {
   return (
     <>
       <shell.ui.PageHeader title="Nuevo líquido" subtitle="Los campos con * son obligatorios."
-        actions={<Link className="btn btn-quiet" to="..">Volver</Link>} />
+        actions={<Link className="btn btn-quiet" to="/products/liquids">Volver</Link>} />
       <div className="card">
-        <LiquidForm shell={shell} onCreated={(id) => navigate(`../${id}`)} />
+        <LiquidForm shell={shell} onCreated={(id) => navigate(`/products/liquids/${id}`, { replace: true })} />
       </div>
     </>
   );
