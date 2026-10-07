@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import type { ShellContext } from '../../shell-contract';
 import { productsApi } from '../api/productsApi';
 import { StockEntryForm } from '../components/StockEntryForm';
+import { FramePhoto, FramePhotoEditor } from '../components/FramePhoto';
 import { formatCents, MOVEMENT_LABEL } from '../model/frame';
 import { validateMinStock } from '../model/validation';
 
@@ -74,6 +75,9 @@ export function FrameDetailPage({ shell }: { shell: ShellContext }): ReactNode {
               <h2>
                 {frame.brand} {frame.model} {frame.lowStock ? <ui.Badge tone="warning">Stock bajo</ui.Badge> : null}
               </h2>
+              <FramePhoto url={frame.imageUrl} label={`${frame.brand} ${frame.model}`} large version={version} />
+              {frame.imageUrl ? <p><a href={`${frame.imageUrl}?v=${version}`} target="_blank" rel="noreferrer">Ver foto completa</a></p> : null}
+              {shell.can('ADMIN') ? <FramePhotoEditor shell={shell} frameId={frame.id} onSaved={() => setVersion((v) => v + 1)} /> : null}
               <dl className="facts">
                 <dt>SKU</dt>
                 <dd>{frame.sku}</dd>

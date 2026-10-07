@@ -15,6 +15,12 @@ export function CatalogTabs(): ReactNode {
       <NavLink to="/products/lenses" className={({ isActive }) => (isActive ? 'btn' : 'btn btn-quiet')}>
         Lentes
       </NavLink>
+      <NavLink to="/products/accessories" className={({ isActive }) => (isActive ? 'btn' : 'btn btn-quiet')}>
+        Accesorios
+      </NavLink>
+      <NavLink to="/products/liquids" className={({ isActive }) => (isActive ? 'btn' : 'btn btn-quiet')}>
+        Líquidos
+      </NavLink>
     </nav>
   );
 }

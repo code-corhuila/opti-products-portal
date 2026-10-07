@@ -1,3 +1,4 @@
+import { FramePhoto } from '../components/FramePhoto';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { ShellContext } from '../../shell-contract';
@@ -117,19 +118,7 @@ export function FramesPage({ shell }: { shell: ShellContext }): ReactNode {
                   {result.data.map((frame) => (
                     <tr key={frame.id}>
                       <td>
-                        {frame.imageUrl ? (
-                          <img src={frame.imageUrl} alt={`${frame.brand} ${frame.model}`}
-                            style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
-                        ) : (
-                          <span aria-hidden="true" role="img" aria-label="Sin foto"
-                            style={{
-                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                              width: '40px', height: '40px', borderRadius: '4px', border: '1px solid var(--border)',
-                              color: 'var(--text-soft)', fontSize: '1.1rem',
-                            }}>
-                            👓
-                          </span>
-                        )}
+                        <FramePhoto url={frame.imageUrl} label={`${frame.brand} ${frame.model}`} />
                       </td>
                       <td>{frame.sku}</td>
                       <td>

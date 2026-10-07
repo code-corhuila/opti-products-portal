@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import type { ShellContext } from '../../shell-contract';
 import { productsApi, type NewFrame } from '../api/productsApi';
 import { pesosToCents } from '../model/frame';
@@ -29,6 +29,8 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
   const { ui } = shell;
   const api = useMemo(() => productsApi(shell.api), [shell.api]);
   const [draft, setDraft] = useState<FrameDraft>(EMPTY_FRAME);
+  const saving = useRef(false);
+  const [uploading, setUploading] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
@@ -73,9 +75,12 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setAttempted(true);
-    if (Object.keys(clientErrors).length > 0) {
+    if (saving.current || photoError || Object.keys(clientErrors).length > 0) {
       return;
     }
+    saving.current = true;
+    setUploading(true);
+    try {
     const created = await submit();
     if (!created) {
       return;
@@ -93,6 +98,10 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
     }
     shell.notify('Montura registrada', 'success');
     onCreated(created.id);
+    } finally {
+      saving.current = false;
+      setUploading(false);
+    }
   }
 
   return (
@@ -100,14 +109,24 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
       {error && Object.keys(fieldErrors).length === 0 ? (
         <ui.Banner kind="error" title="No se pudo registrar la montura">{error.userMessage}</ui.Banner>
       ) : null}
-      <div className="grid-2">
+      <ui.SectionHeading tone="primary" title="Información básica" description="Datos principales de identificación de la montura."
+        icon={<><rect x="3" y="4" width="14" height="12" rx="2" /><path d="M6 8h8M6 12h5" /></>} />
+      <div className="grid-3">
         <ui.TextField id="sku" label="SKU" required value={draft.sku} onChange={set('sku')} error={errors.sku}
           maxLength={60} autoComplete="off" hint="Único, por ejemplo RB5228-2000" />
         <ui.TextField id="brand" label="Marca" required value={draft.brand} onChange={set('brand')} error={errors.brand} maxLength={80} />
         <ui.TextField id="model" label="Modelo" required value={draft.model} onChange={set('model')} error={errors.model} maxLength={80} />
+      </div>
+      <ui.SectionHeading tone="purple" title="Características" description="Clasificación y apariencia de la montura."
+        icon={<><circle cx="10" cy="10" r="7" /><circle cx="10" cy="10" r="3" /></>} />
+      <div className="grid-3">
         <ui.TextField id="color" label="Color" value={draft.color} onChange={set('color')} maxLength={60} />
         <ui.TextField id="material" label="Material" value={draft.material} onChange={set('material')} maxLength={60} />
         <ui.TextField id="gender" label="Género" value={draft.gender} onChange={set('gender')} maxLength={30} />
+      </div>
+      <ui.SectionHeading tone="success" title="Precios y stock" description="Valores, niveles de inventario y datos de reposición."
+        icon={<path d="M10 2v16M14 5H8a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H5" />} />
+      <div className="grid-3">
         <ui.TextField id="costPesos" label="Costo (pesos)" required inputMode="numeric" value={draft.costPesos}
           onChange={set('costPesos')} error={errors.costPesos} maxLength={12} hint="Solo números, sin puntos ni signo" />
         <ui.TextField id="salePricePesos" label="Precio de venta (pesos)" required inputMode="numeric"
@@ -132,8 +151,8 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
         )}
       </ui.Field>
       <div className="actions">
-        <button type="submit" className="btn" disabled={pending}>
-          {pending ? 'Guardando…' : 'Registrar montura'}
+        <button type="submit" className="btn" disabled={pending || uploading}>
+          {pending || uploading ? 'Guardando…' : 'Registrar montura'}
         </button>
       </div>
     </form>

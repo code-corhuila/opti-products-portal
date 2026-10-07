@@ -8,9 +8,9 @@ export function NewAccessoryPage({ shell }: { shell: ShellContext }): ReactNode 
   return (
     <>
       <shell.ui.PageHeader title="Nuevo accesorio" subtitle="Los campos con * son obligatorios."
-        actions={<Link className="btn btn-quiet" to="..">Volver</Link>} />
+        actions={<Link className="btn btn-quiet" to="/products/accessories">Volver</Link>} />
       <div className="card">
-        <AccessoryForm shell={shell} onCreated={(id) => navigate(`../${id}`)} />
+        <AccessoryForm shell={shell} onCreated={(id) => navigate(`/products/accessories/${id}`, { replace: true })} />
       </div>
     </>
   );
