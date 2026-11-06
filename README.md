@@ -23,3 +23,9 @@ branch into another: `merge develop -> qa` and `merge qa -> main` do not exist i
 rule.
 
 Full policy: `00-governance/branching-policy.md` in `library-docs`.
+
+## Validaciones alineadas con servidor
+
+Monturas, lentes, accesorios y líquidos verifican límites de campos opcionales y montos (hasta 100.000.000.000 centavos), además de SKU, marca/categoría, costo/precio, volumen y stock. El índice de refracción admite como máximo dos decimales, sin notación científica ni redondeos silenciosos. Los errores del servidor `costCents`/`salePriceCents` se muestran en los campos de pesos; los campos opcionales y el motivo de entrada de monturas muestran sus errores en español.
+
+`npm test` y `npm run build`; casos frontera de textos, dinero e índice de refracción. Los límites correspondientes permanecen protegidos por `opti-products-api`. Se revisaron alta, entradas de stock y edición de mínimos.
