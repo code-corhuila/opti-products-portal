@@ -10,7 +10,7 @@ export function StockEntryForm({ shell, frameId, onSaved }: { shell: ShellContex
   const [quantity, setQuantity] = useState('');
   const [reason, setReason] = useState('');
   const [attempted, setAttempted] = useState(false);
-  const clientErrors = validateStockEntry(quantity);
+  const clientErrors = validateStockEntry(quantity, reason);
   const { submit, pending, error, fieldErrors } = ui.useSubmit(
     (key) => api.addStock(frameId, Number(quantity), reason.trim() || null, key),
     `${frameId}:${quantity}:${reason}`,
@@ -37,7 +37,7 @@ export function StockEntryForm({ shell, frameId, onSaved }: { shell: ShellContex
       {error && Object.keys(fieldErrors).length === 0 ? <ui.Banner kind="error">{error.userMessage}</ui.Banner> : null}
       <ui.TextField id="entry-quantity" label="Unidades a ingresar" required inputMode="numeric" value={quantity}
         onChange={setQuantity} error={errors.quantity} maxLength={7} />
-      <ui.TextField id="entry-reason" label="Motivo (opcional)" value={reason} onChange={setReason} maxLength={255} />
+      <ui.TextField id="entry-reason" label="Motivo (opcional)" value={reason} onChange={setReason} error={errors.reason} maxLength={255} />
       <button type="submit" className="btn" disabled={pending}>
         {pending ? 'Guardando…' : 'Registrar entrada'}
       </button>
