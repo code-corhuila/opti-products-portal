@@ -62,12 +62,12 @@ export function validateFrame(draft: FrameDraft): Errors {
     errors.model = 'El modelo es obligatorio';
   }
   const cost = pesosToCents(draft.costPesos);
-  if (Number.isNaN(cost) || cost < 0) {
-    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 310000';
+  if (!Number.isSafeInteger(cost) || cost < 0 || cost > 100_000_000_000) {
+    errors.costPesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   }
   const price = pesosToCents(draft.salePricePesos);
-  if (Number.isNaN(price) || price < 0) {
-    errors.salePricePesos = 'Escribe un valor en pesos';
+  if (!Number.isSafeInteger(price) || price < 0 || price > 100_000_000_000) {
+    errors.salePricePesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   } else if (!Number.isNaN(cost) && price < cost) {
     errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
   }
@@ -76,6 +76,9 @@ export function validateFrame(draft: FrameDraft): Errors {
   }
   if (integerBetween(draft.minStock, 0, 1_000_000) === undefined) {
     errors.minStock = 'El stock mínimo debe ser un número entero, 0 o mayor';
+  }
+  for (const [field, max] of Object.entries({ color: 60, material: 60, gender: 30, location: 80, supplier: 120 })) {
+    if (draft[field as keyof FrameDraft].trim().length > max) errors[field] = `Máximo ${max} caracteres`;
   }
   return errors;
 }
@@ -120,17 +123,17 @@ export function validateLens(draft: LensDraft): Errors {
   }
   if (draft.refractiveIndex.trim() !== '') {
     const index = Number(draft.refractiveIndex.trim());
-    if (Number.isNaN(index) || index < 1 || index > 2) {
+    if (!/^\d(?:\.\d{1,2})?$/.test(draft.refractiveIndex.trim()) || !Number.isFinite(index) || index < 1 || index > 2) {
       errors.refractiveIndex = 'Debe estar entre 1.00 y 2.00';
     }
   }
   const cost = pesosToCents(draft.costPesos);
-  if (Number.isNaN(cost) || cost < 0) {
-    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 80000';
+  if (!Number.isSafeInteger(cost) || cost < 0 || cost > 100_000_000_000) {
+    errors.costPesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   }
   const price = pesosToCents(draft.salePricePesos);
-  if (Number.isNaN(price) || price < 0) {
-    errors.salePricePesos = 'Escribe un valor en pesos';
+  if (!Number.isSafeInteger(price) || price < 0 || price > 100_000_000_000) {
+    errors.salePricePesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   } else if (!Number.isNaN(cost) && price < cost) {
     errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
   }
@@ -140,6 +143,8 @@ export function validateLens(draft: LensDraft): Errors {
   if (integerBetween(draft.minStock, 0, 1_000_000) === undefined) {
     errors.minStock = 'El stock mínimo debe ser un número entero, 0 o mayor';
   }
+  if (draft.material.trim().length > 60) errors.material = 'Máximo 60 caracteres';
+  if (draft.coating.trim().length > 80) errors.coating = 'Máximo 80 caracteres';
   return errors;
 }
 
@@ -173,12 +178,12 @@ export function validateAccessory(draft: AccessoryDraft): Errors {
     errors.category = 'La categoría es obligatoria (2 a 60 caracteres)';
   }
   const cost = pesosToCents(draft.costPesos);
-  if (Number.isNaN(cost) || cost < 0) {
-    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 5000';
+  if (!Number.isSafeInteger(cost) || cost < 0 || cost > 100_000_000_000) {
+    errors.costPesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   }
   const price = pesosToCents(draft.salePricePesos);
-  if (Number.isNaN(price) || price < 0) {
-    errors.salePricePesos = 'Escribe un valor en pesos';
+  if (!Number.isSafeInteger(price) || price < 0 || price > 100_000_000_000) {
+    errors.salePricePesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   } else if (!Number.isNaN(cost) && price < cost) {
     errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
   }
@@ -188,6 +193,7 @@ export function validateAccessory(draft: AccessoryDraft): Errors {
   if (integerBetween(draft.minStock, 0, 1_000_000) === undefined) {
     errors.minStock = 'El stock mínimo debe ser un número entero, 0 o mayor';
   }
+  if (draft.brand.trim().length > 80) errors.brand = 'Máximo 80 caracteres';
   return errors;
 }
 
@@ -224,12 +230,12 @@ export function validateLiquid(draft: LiquidDraft): Errors {
     errors.volumeMl = 'El volumen debe ser un número entero entre 1 y 5000 ml';
   }
   const cost = pesosToCents(draft.costPesos);
-  if (Number.isNaN(cost) || cost < 0) {
-    errors.costPesos = 'Escribe un valor en pesos, por ejemplo 3000';
+  if (!Number.isSafeInteger(cost) || cost < 0 || cost > 100_000_000_000) {
+    errors.costPesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   }
   const price = pesosToCents(draft.salePricePesos);
-  if (Number.isNaN(price) || price < 0) {
-    errors.salePricePesos = 'Escribe un valor en pesos';
+  if (!Number.isSafeInteger(price) || price < 0 || price > 100_000_000_000) {
+    errors.salePricePesos = 'Escribe un valor entre 0 y 1.000.000.000 pesos';
   } else if (!Number.isNaN(cost) && price < cost) {
     errors.salePricePesos = 'El precio de venta debe ser mayor o igual al costo';
   }
@@ -242,11 +248,12 @@ export function validateLiquid(draft: LiquidDraft): Errors {
   return errors;
 }
 
-export function validateStockEntry(quantityText: string): Errors {
+export function validateStockEntry(quantityText: string, reason = ''): Errors {
   const errors: Errors = {};
   if (integerBetween(quantityText, 1, 1_000_000) === undefined) {
     errors.quantity = 'La cantidad debe ser un número entero mayor que 0';
   }
+  if (reason.trim().length > 255) errors.reason = 'Máximo 255 caracteres';
   return errors;
 }
 

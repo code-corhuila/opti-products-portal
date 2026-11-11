@@ -24,7 +24,10 @@ export function LiquidForm({ shell, onCreated }: { shell: ShellContext; onCreate
   const [attempted, setAttempted] = useState(false);
   const clientErrors = validateLiquid(draft);
   const { submit, pending, error, fieldErrors } = ui.useSubmit((key) => api.create(toRequest(draft), key), JSON.stringify(draft));
-  const errors = { ...(attempted ? clientErrors : {}), ...fieldErrors };
+  const errors: Record<string, string | undefined> = { ...(attempted ? clientErrors : {}), ...fieldErrors,
+    costPesos: fieldErrors.costCents ?? (attempted ? clientErrors.costPesos : undefined),
+    salePricePesos: fieldErrors.salePriceCents ?? (attempted ? clientErrors.salePricePesos : undefined),
+  };
 
   const set = (key: keyof LiquidDraft) => (value: string) => setDraft((d) => ({ ...d, [key]: value }));
 
