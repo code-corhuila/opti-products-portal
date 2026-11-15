@@ -28,7 +28,10 @@ export function LensForm({ shell, onCreated }: { shell: ShellContext; onCreated:
   const [attempted, setAttempted] = useState(false);
   const clientErrors = validateLens(draft);
   const { submit, pending, error, fieldErrors } = ui.useSubmit((key) => api.create(toRequest(draft), key), JSON.stringify(draft));
-  const errors = { ...(attempted ? clientErrors : {}), ...fieldErrors };
+  const errors: Record<string, string | undefined> = { ...(attempted ? clientErrors : {}), ...fieldErrors,
+    costPesos: fieldErrors.costCents ?? (attempted ? clientErrors.costPesos : undefined),
+    salePricePesos: fieldErrors.salePriceCents ?? (attempted ? clientErrors.salePricePesos : undefined),
+  };
 
   const set = (key: keyof LensDraft) => (value: string) => setDraft((d) => ({ ...d, [key]: value }));
 
@@ -59,8 +62,8 @@ export function LensForm({ shell, onCreated }: { shell: ShellContext; onCreated:
         <ui.SelectField id="lens-type" label="Tipo de lente" required value={draft.lensType} placeholder="Selecciona"
           onChange={set('lensType')} error={errors.lensType}
           options={Object.entries(LENS_TYPE_LABEL).map(([value, label]) => ({ value, label }))} />
-        <ui.TextField id="lens-material" label="Material" value={draft.material} onChange={set('material')} maxLength={60} />
-        <ui.TextField id="lens-coating" label="Recubrimiento" value={draft.coating} onChange={set('coating')} maxLength={80} />
+        <ui.TextField id="lens-material" label="Material" value={draft.material} onChange={set('material')} error={errors.material} maxLength={60} />
+        <ui.TextField id="lens-coating" label="Recubrimiento" value={draft.coating} onChange={set('coating')} error={errors.coating} maxLength={80} />
         <ui.TextField id="lens-refractive-index" label="Índice de refracción" value={draft.refractiveIndex}
           onChange={set('refractiveIndex')} error={errors.refractiveIndex} maxLength={4} hint="Opcional, entre 1.00 y 2.00" />
       </div>

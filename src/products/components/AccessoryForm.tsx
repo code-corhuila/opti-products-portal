@@ -24,7 +24,10 @@ export function AccessoryForm({ shell, onCreated }: { shell: ShellContext; onCre
   const [attempted, setAttempted] = useState(false);
   const clientErrors = validateAccessory(draft);
   const { submit, pending, error, fieldErrors } = ui.useSubmit((key) => api.create(toRequest(draft), key), JSON.stringify(draft));
-  const errors = { ...(attempted ? clientErrors : {}), ...fieldErrors };
+  const errors: Record<string, string | undefined> = { ...(attempted ? clientErrors : {}), ...fieldErrors,
+    costPesos: fieldErrors.costCents ?? (attempted ? clientErrors.costPesos : undefined),
+    salePricePesos: fieldErrors.salePriceCents ?? (attempted ? clientErrors.salePricePesos : undefined),
+  };
 
   const set = (key: keyof AccessoryDraft) => (value: string) => setDraft((d) => ({ ...d, [key]: value }));
 
@@ -51,7 +54,7 @@ export function AccessoryForm({ shell, onCreated }: { shell: ShellContext; onCre
       <div className="grid-3">
         <ui.TextField id="accessory-sku" label="SKU" required value={draft.sku} onChange={set('sku')} error={errors.sku}
           maxLength={60} autoComplete="off" hint="Único, por ejemplo ACC-CASE-001" />
-        <ui.TextField id="accessory-brand" label="Marca (opcional)" value={draft.brand} onChange={set('brand')} maxLength={80} />
+        <ui.TextField id="accessory-brand" label="Marca (opcional)" value={draft.brand} onChange={set('brand')} error={errors.brand} maxLength={80} />
         <ui.TextField id="accessory-category" label="Categoría" required value={draft.category} onChange={set('category')}
           error={errors.category} maxLength={60} hint="Por ejemplo Estuche, Paño de limpieza, Cordón" />
       </div>

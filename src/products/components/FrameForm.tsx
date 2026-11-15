@@ -37,7 +37,10 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const clientErrors = validateFrame(draft);
   const { submit, pending, error, fieldErrors } = ui.useSubmit((key) => api.create(toRequest(draft), key), JSON.stringify(draft));
-  const errors = { ...(attempted ? clientErrors : {}), ...fieldErrors };
+  const errors: Record<string, string | undefined> = { ...(attempted ? clientErrors : {}), ...fieldErrors,
+    costPesos: fieldErrors.costCents ?? (attempted ? clientErrors.costPesos : undefined),
+    salePricePesos: fieldErrors.salePriceCents ?? (attempted ? clientErrors.salePricePesos : undefined),
+  };
 
   const set = (key: keyof FrameDraft) => (value: string) => setDraft((d) => ({ ...d, [key]: value }));
 
@@ -120,9 +123,9 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
       <ui.SectionHeading tone="purple" title="Características" description="Clasificación y apariencia de la montura."
         icon={<><circle cx="10" cy="10" r="7" /><circle cx="10" cy="10" r="3" /></>} />
       <div className="grid-3">
-        <ui.TextField id="color" label="Color" value={draft.color} onChange={set('color')} maxLength={60} />
-        <ui.TextField id="material" label="Material" value={draft.material} onChange={set('material')} maxLength={60} />
-        <ui.TextField id="gender" label="Género" value={draft.gender} onChange={set('gender')} maxLength={30} />
+        <ui.TextField id="color" label="Color" value={draft.color} onChange={set('color')} error={errors.color} maxLength={60} />
+        <ui.TextField id="material" label="Material" value={draft.material} onChange={set('material')} error={errors.material} maxLength={60} />
+        <ui.TextField id="gender" label="Género" value={draft.gender} onChange={set('gender')} error={errors.gender} maxLength={30} />
       </div>
       <ui.SectionHeading tone="success" title="Precios y stock" description="Valores, niveles de inventario y datos de reposición."
         icon={<path d="M10 2v16M14 5H8a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H5" />} />
@@ -136,8 +139,8 @@ export function FrameForm({ shell, onCreated }: { shell: ShellContext; onCreated
           onChange={set('stock')} error={errors.stock} maxLength={7} />
         <ui.TextField id="minStock" label="Stock mínimo" required inputMode="numeric" value={draft.minStock}
           onChange={set('minStock')} error={errors.minStock} maxLength={7} />
-        <ui.TextField id="location" label="Ubicación" value={draft.location} onChange={set('location')} maxLength={80} />
-        <ui.TextField id="supplier" label="Proveedor" value={draft.supplier} onChange={set('supplier')} maxLength={120} />
+        <ui.TextField id="location" label="Ubicación" value={draft.location} onChange={set('location')} error={errors.location} maxLength={80} />
+        <ui.TextField id="supplier" label="Proveedor" value={draft.supplier} onChange={set('supplier')} error={errors.supplier} maxLength={120} />
       </div>
       <ui.Field id="frame-photo" label="Foto de la montura" hint="Opcional. JPG o PNG, máximo 2 MB." error={photoError ?? undefined}>
         {(aria) => (

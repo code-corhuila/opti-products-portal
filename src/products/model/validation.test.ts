@@ -96,3 +96,17 @@ describe('stock operations', () => {
     expect(validateMinStock('-1').minStock).toBeDefined();
   });
 });
+
+
+describe('API-aligned product limits', () => {
+  it('rejects optional fields above server limits and oversized money', () => {
+    expect(validateFrame({ ...valid, color: 'x'.repeat(61), supplier: 'x'.repeat(121) })).toHaveProperty('color');
+    expect(validateFrame({ ...valid, supplier: 'x'.repeat(121) })).toHaveProperty('supplier');
+    expect(validateFrame({ ...valid, costPesos: '1000000001', salePricePesos: '1000000001' })).toHaveProperty('costPesos');
+    expect(validateLens({ ...validLens, material: 'x'.repeat(61), coating: 'x'.repeat(81) })).toHaveProperty('coating');
+  });
+  it('rejects scientific notation and precision that would be silently rounded', () => {
+    for (const refractiveIndex of ['1e0', '0x1', '1.501', 'Infinity']) expect(validateLens({ ...validLens, refractiveIndex })).toHaveProperty('refractiveIndex');
+    expect(validateLens({ ...validLens, refractiveIndex: '1.50' })).not.toHaveProperty('refractiveIndex');
+  });
+});
